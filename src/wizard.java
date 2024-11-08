@@ -22,5 +22,18 @@ public class wizard {
     public void move() {
         xpos = xpos + dx;
         ypos = ypos + dy;
+        if (xpos<=0){
+            dx=dx*-1;
+        }
+
+        if (ypos<=0){
+            dy=dy*-1;
+        }
+        if (xpos>1000){
+            dx=dx*-1;
+        }
+        if (ypos>700){
+            dy=dy*-1;
+        }
     }
 }

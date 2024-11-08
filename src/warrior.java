@@ -22,5 +22,19 @@ public class warrior {
     public void move() {
         xpos = xpos + dx;
         ypos = ypos + dy;
+        if (xpos<=0){
+            xpos=1000;
+        }
+        if (xpos>1000){
+            xpos=0;
+
+        }
+
+        if (ypos<=0){
+            ypos=700;
+        }
+        if (ypos>700){
+            ypos=0;
+        }
     }
 }
