@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class wizard {
     public String name;                //holds the name of the hero
     public int xpos;                //the x position
@@ -24,8 +26,9 @@ public class wizard {
         ypos = ypos + dy;
         if (xpos<=0){
             dx=dx*-1;
-        }
 
+
+        }
         if (ypos<=0){
             dy=dy*-1;
         }
@@ -36,4 +39,5 @@ public class wizard {
             dy=dy*-1;
         }
     }
+
 }

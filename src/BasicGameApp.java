@@ -13,18 +13,19 @@
 
 //Graphics Libraries
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.tools.Tool;
 
 
 //*******************************************************************************
 // Class Definition Section
 
 
-public class BasicGameApp implements Runnable {
+public class BasicGameApp implements Runnable, KeyListener {
 
    //Variable Definition Section
    //Declare the variables used in the program 
@@ -43,12 +44,16 @@ public class BasicGameApp implements Runnable {
 	public Image astroPic;
 	public Image WizardPic;
 	public Image warriorPic;
+	public Image GarchompPic;
+	public Image SpirtombPic;
 
    //Declare the objects used in the program
    //These are things that are made up of more than one variable type
 	private Astronaut astro;
 	public wizard Gandalf;
 	public warrior Ajax;
+	public Garchomp Cynthia;
+	public Spiritomb CynthiaSpiritomb;
 
 
 
@@ -76,10 +81,15 @@ public class BasicGameApp implements Runnable {
       //create (construct) the objects needed for the game and load up 
 		astroPic = Toolkit.getDefaultToolkit().getImage("astronaut.png"); //load the picture
 		astro = new Astronaut(10,100);
-		WizardPic= Toolkit.getDefaultToolkit().getImage("wizard.jpg");
 		warriorPic=Toolkit.getDefaultToolkit().getImage("Warrior.jpg");
 		Gandalf = new wizard(200,150,70,60);
 		Ajax= new warrior(500,150,80,90);
+		GarchompPic =Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
+		Cynthia=new Garchomp(200,400,100,100);
+		CynthiaSpiritomb=new Spiritomb(600,600,100,100);
+		SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb.png");
+
+
 
 
 
@@ -97,10 +107,22 @@ public class BasicGameApp implements Runnable {
 
       //for the moment we will loop things forever.
 		while (true) {
-
+		collision();
          moveThings();  //move all the game objects
          render();  // paint the graphics
          pause(20); // sleep for 10 ms
+			if(Cynthia.dx>0) {
+				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
+			}
+			else  {
+				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
+			}
+			if(CynthiaSpiritomb.dx>0) {
+				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
+			}
+			else {
+				SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb(flipped).png");
+			}
 		}
 	}
 
@@ -111,6 +133,18 @@ public class BasicGameApp implements Runnable {
 		astro.move();
 		Gandalf.move();
 		Ajax.move();
+		Cynthia.move();
+		CynthiaSpiritomb.move();
+
+	}
+
+	public void collision() {
+		if(Cynthia.rec.intersects(CynthiaSpiritomb.rec)){
+			System.out.println("crash");
+			Cynthia.dx=0;
+			Cynthia.dy=0;
+		}
+
 
 	}
 	
@@ -137,6 +171,7 @@ public class BasicGameApp implements Runnable {
       canvas = new Canvas();  
       canvas.setBounds(0, 0, WIDTH, HEIGHT);
       canvas.setIgnoreRepaint(true);
+	  canvas.addKeyListener(this);
    
       panel.add(canvas);  // adds the canvas to the panel.
    
@@ -155,6 +190,10 @@ public class BasicGameApp implements Runnable {
    }
 
 
+
+
+
+
 	//paints things on the screen using bufferStrategy
 	private void render() {
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
@@ -162,11 +201,37 @@ public class BasicGameApp implements Runnable {
 
       //draw the image of the astronaut
 		//g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
-		g.drawImage(WizardPic, Gandalf.xpos,Gandalf.ypos,Gandalf.width,Gandalf.height, null);
-		g.drawImage(warriorPic,Ajax.xpos, Ajax.ypos,Ajax.width, Ajax.height, null);
+		g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+		g.drawImage(SpirtombPic, CynthiaSpiritomb.xpos,CynthiaSpiritomb.ypos,CynthiaSpiritomb.width,CynthiaSpiritomb.height, null);
+
 
 		g.dispose();
 
 		bufferStrategy.show();
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+
+
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		char keyChar = e.getKeyChar();
+
+		System.out.println(keyChar+ ", "+ key);
+		if(key==89){
+			System.out.println("works");
+		}
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		int key = e.getKeyCode();
+		char keyChar = e.getKeyChar();
 	}
 }
