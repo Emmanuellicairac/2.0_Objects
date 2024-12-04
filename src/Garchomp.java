@@ -16,34 +16,30 @@ public class Garchomp {
     public int SpaAtk=80;
     public int Spdef=85;
     public int speed=102;
+    public double DragonClaw;
+
 
 
     public Garchomp(int wxpos, int wypos, int Wwidth, int wheight) {
         xpos = wxpos;
         ypos = wypos;
-        dx = 2;
-        dy = 6;
+        dx = 0;
+        dy = 0;
         width = Wwidth;
         height = wheight;
-        isAlive = true;
+        DragonClaw= (double) (atk + 50 % +80)/3;
+        if(HP>0){
+            isAlive = true;
+        } else {
+            isAlive=false;
+        }
+
+
         rec=new Rectangle(xpos,ypos,width,height);
     }
         public void move() {
             xpos = xpos + dx;
             ypos = ypos + dy;
-            if (xpos<=0){
-                dx=dx*-1;
-
-            }
-            if (ypos<=0){
-                dy=dy*-1;
-            }
-            if (xpos>1000){
-                dx=dx*-1;
-            }
-            if (ypos>700){
-                dy=dy*-1;
-            }
             rec = new Rectangle(xpos, ypos, width, height);
 
     }

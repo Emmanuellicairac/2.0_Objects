@@ -41,19 +41,23 @@ public class BasicGameApp implements Runnable, KeyListener {
    public JPanel panel;
    
 	public BufferStrategy bufferStrategy;
-	public Image astroPic;
-	public Image WizardPic;
-	public Image warriorPic;
+
 	public Image GarchompPic;
 	public Image SpirtombPic;
 
    //Declare the objects used in the program
    //These are things that are made up of more than one variable type
-	private Astronaut astro;
-	public wizard Gandalf;
-	public warrior Ajax;
+
+
 	public Garchomp Cynthia;
 	public Spiritomb CynthiaSpiritomb;
+	public Lucario LucarioC;
+	public boolean isMove=true;
+	public boolean RightFacing=true;
+	public Image GarchompPicLeft;
+	public Image LucarioPic;
+	public Image LucarioPicLeft;
+
 
 
 
@@ -78,16 +82,19 @@ public class BasicGameApp implements Runnable, KeyListener {
       setUpGraphics();
        
       //variable and objects
-      //create (construct) the objects needed for the game and load up 
-		astroPic = Toolkit.getDefaultToolkit().getImage("astronaut.png"); //load the picture
-		astro = new Astronaut(10,100);
-		warriorPic=Toolkit.getDefaultToolkit().getImage("Warrior.jpg");
-		Gandalf = new wizard(200,150,70,60);
-		Ajax= new warrior(500,150,80,90);
+      //create (construct) the objects needed for the game and load up
 		GarchompPic =Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
 		Cynthia=new Garchomp(200,400,100,100);
+		LucarioC=new Lucario(500,200,80,100);
 		CynthiaSpiritomb=new Spiritomb(600,600,100,100);
 		SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb.png");
+			GarchompPicLeft=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
+			GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
+			SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb(flipped).png");
+			LucarioPic=Toolkit.getDefaultToolkit().getImage("Lucario.png");
+			LucarioPicLeft=Toolkit.getDefaultToolkit().getImage("LucarioC(flipped).png");
+
+
 
 
 
@@ -108,21 +115,12 @@ public class BasicGameApp implements Runnable, KeyListener {
       //for the moment we will loop things forever.
 		while (true) {
 		collision();
-         moveThings();  //move all the game objects
+		if (isMove==true){
+			moveThings();  //move all the game objects
+		}
          render();  // paint the graphics
          pause(20); // sleep for 10 ms
-			if(Cynthia.dx>0) {
-				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
-			}
-			else  {
-				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
-			}
-			if(CynthiaSpiritomb.dx>0) {
-				GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
-			}
-			else {
-				SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb(flipped).png");
-			}
+
 		}
 	}
 
@@ -130,11 +128,9 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public void moveThings()
 	{
       //calls the move( ) code in the objects
-		astro.move();
-		Gandalf.move();
-		Ajax.move();
 		Cynthia.move();
 		CynthiaSpiritomb.move();
+		LucarioC.move();
 
 	}
 
@@ -143,6 +139,22 @@ public class BasicGameApp implements Runnable, KeyListener {
 			System.out.println("crash");
 			Cynthia.dx=0;
 			Cynthia.dy=0;
+		}
+		if(Cynthia.rec.intersects(LucarioC.rec)){
+			System.out.println("crash");
+			Cynthia.dx=0;
+			Cynthia.dy=0;
+		}
+		if(LucarioC.rec.intersects(CynthiaSpiritomb.rec)){
+			System.out.println("crash");
+			LucarioC.dx= LucarioC.dx*-1;
+			LucarioC.dy= LucarioC.dy*-1;
+
+		}
+		if(CynthiaSpiritomb.rec.intersects((LucarioC.rec))){
+			CynthiaSpiritomb.dx= CynthiaSpiritomb.dx*-1;
+			CynthiaSpiritomb.dy=CynthiaSpiritomb.dy*-1;
+
 		}
 
 
@@ -200,9 +212,16 @@ public class BasicGameApp implements Runnable, KeyListener {
 		g.clearRect(0, 0, WIDTH, HEIGHT);
 
       //draw the image of the astronaut
-		//g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
-		g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+		if (RightFacing==true){
+			g.drawImage(GarchompPicLeft, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+		}else {
+			g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+		}
+
 		g.drawImage(SpirtombPic, CynthiaSpiritomb.xpos,CynthiaSpiritomb.ypos,CynthiaSpiritomb.width,CynthiaSpiritomb.height, null);
+		g.drawImage(LucarioPic,LucarioC.xpos, LucarioC.ypos,LucarioC.width, LucarioC.height, null);
 
 
 		g.dispose();
@@ -222,10 +241,29 @@ public class BasicGameApp implements Runnable, KeyListener {
 		int key = e.getKeyCode();
 		char keyChar = e.getKeyChar();
 
-		System.out.println(keyChar+ ", "+ key);
-		if(key==89){
+		System.out.println(keyChar + ", " + key);
+		if (key == 89) {
 			System.out.println("works");
 		}
+		if (key == 81) {
+			isMove = false;
+		} else
+			isMove = true;
+		if(key==87) {
+			Cynthia.dy = -5;
+		}
+		if(key==83){
+			Cynthia.dy=5;
+		}
+		if(key==65){
+			Cynthia.dx=-5;
+			RightFacing=false;
+		}
+		if(key==68){
+			Cynthia.dx=5;
+			RightFacing=true;
+		}
+
 
 	}
 
@@ -233,5 +271,21 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
 		char keyChar = e.getKeyChar();
+		if(key==87) {
+			Cynthia.dy = 0;
+		}
+		if(key==83){
+			Cynthia.dy=0;
+		}
+		if(key==65){
+			Cynthia.dx=0;
+			RightFacing=false;
+			System.out.println("test");
+
+		}
+		if(key==68){
+			Cynthia.dx=0;
+			RightFacing=true;
+		}
 	}
 }
