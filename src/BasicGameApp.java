@@ -142,15 +142,7 @@ public class BasicGameApp implements Runnable, KeyListener {
 	}
 
 	public void collision() {
-		if(Cynthia.rec.intersects(CynthiaSpiritomb.rec)){
-			Cynthia.dx=0;
-			Cynthia.dy=0;
-		}
-		if(Cynthia.rec.intersects(LucarioC.rec)){
 
-			Cynthia.dx=0;
-			Cynthia.dy=0;
-		}
 		if(LucarioC.rec.intersects(CynthiaSpiritomb.rec)){
 
 			LucarioC.dx= LucarioC.dx*-1;
