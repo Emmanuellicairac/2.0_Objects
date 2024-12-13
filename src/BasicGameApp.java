@@ -19,6 +19,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.tools.Tool;
 
 
 //*******************************************************************************
@@ -54,9 +55,13 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public Lucario LucarioC;
 	public boolean isMove=true;
 	public boolean RightFacing=true;
+	public boolean drawFire=false;
+	public boolean drawFireleft=false;
 	public Image GarchompPicLeft;
 	public Image LucarioPic;
 	public Image LucarioPicLeft;
+	public Image FirePic;
+	public Image BackgroundPic;
 
 
 
@@ -85,14 +90,16 @@ public class BasicGameApp implements Runnable, KeyListener {
       //create (construct) the objects needed for the game and load up
 		GarchompPic =Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
 		Cynthia=new Garchomp(200,400,100,100);
-		LucarioC=new Lucario(500,200,80,100);
-		CynthiaSpiritomb=new Spiritomb(600,600,100,100);
+		LucarioC=new Lucario(500,200,200,200);
+		CynthiaSpiritomb=new Spiritomb(600,600,200,150);
 		SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb.png");
-			GarchompPicLeft=Toolkit.getDefaultToolkit().getImage("Garchomp(flipped)..jpg");
-			GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
+			GarchompPicLeft=Toolkit.getDefaultToolkit().getImage("Garchomp(flip).png");
+			GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.png");
 			SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb(flipped).png");
-			LucarioPic=Toolkit.getDefaultToolkit().getImage("Lucario.png");
-			LucarioPicLeft=Toolkit.getDefaultToolkit().getImage("LucarioC(flipped).png");
+			LucarioPic=Toolkit.getDefaultToolkit().getImage("lucario.png");
+			LucarioPicLeft=Toolkit.getDefaultToolkit().getImage("lucario(flip).png");
+			FirePic= Toolkit.getDefaultToolkit().getImage("fire.jpg");
+			BackgroundPic=Toolkit.getDefaultToolkit().getImage("Background.png");
 
 
 
@@ -136,17 +143,16 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 	public void collision() {
 		if(Cynthia.rec.intersects(CynthiaSpiritomb.rec)){
-			System.out.println("crash");
 			Cynthia.dx=0;
 			Cynthia.dy=0;
 		}
 		if(Cynthia.rec.intersects(LucarioC.rec)){
-			System.out.println("crash");
+
 			Cynthia.dx=0;
 			Cynthia.dy=0;
 		}
 		if(LucarioC.rec.intersects(CynthiaSpiritomb.rec)){
-			System.out.println("crash");
+
 			LucarioC.dx= LucarioC.dx*-1;
 			LucarioC.dy= LucarioC.dy*-1;
 
@@ -156,6 +162,17 @@ public class BasicGameApp implements Runnable, KeyListener {
 			CynthiaSpiritomb.dy=CynthiaSpiritomb.dy*-1;
 
 		}
+		if(Cynthia.myFilre.rec.intersects(LucarioC.rec)&& drawFire==true){
+			drawFire=false;
+			LucarioC.HP= LucarioC.HP+(Cynthia.DragonClaw-LucarioC.defense);
+			System.out.println("Lucario HP is   "+LucarioC.HP);
+		}
+		if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb.rec)&& drawFire==true){
+			drawFire=false;
+			CynthiaSpiritomb.HP=CynthiaSpiritomb.HP-(Cynthia.StrongFlame-CynthiaSpiritomb.defense);
+			System.out.println("Spritomb HP is   "+CynthiaSpiritomb.HP);
+		}
+
 
 
 	}
@@ -210,6 +227,8 @@ public class BasicGameApp implements Runnable, KeyListener {
 	private void render() {
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		g.clearRect(0, 0, WIDTH, HEIGHT);
+		g.drawImage(BackgroundPic,0,0,WIDTH,HEIGHT,null);
+
 
       //draw the image of the astronaut
 		if (RightFacing==true){
@@ -219,9 +238,24 @@ public class BasicGameApp implements Runnable, KeyListener {
 			g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
 
 		}
+		if (CynthiaSpiritomb.isAlive==true){
+			g.drawImage(SpirtombPic, CynthiaSpiritomb.xpos,CynthiaSpiritomb.ypos,CynthiaSpiritomb.width,CynthiaSpiritomb.height, null);
 
-		g.drawImage(SpirtombPic, CynthiaSpiritomb.xpos,CynthiaSpiritomb.ypos,CynthiaSpiritomb.width,CynthiaSpiritomb.height, null);
-		g.drawImage(LucarioPic,LucarioC.xpos, LucarioC.ypos,LucarioC.width, LucarioC.height, null);
+		} else {
+
+		}
+
+
+		if (LucarioC.isAlive==true){
+			g.drawImage(LucarioPic,LucarioC.xpos, LucarioC.ypos,LucarioC.width, LucarioC.height, null);
+		} else {
+
+		}
+
+		if(drawFire==true){
+			g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+		}
 
 
 		g.dispose();
@@ -271,6 +305,13 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
 		char keyChar = e.getKeyChar();
+		if(key==80){
+			System.out.println(Cynthia.DragonClaw);
+			if (RightFacing==true){
+				drawFire=true;
+			}
+
+		}
 		if(key==87) {
 			Cynthia.dy = 0;
 		}

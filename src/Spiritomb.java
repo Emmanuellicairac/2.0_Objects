@@ -10,7 +10,7 @@ public class Spiritomb {
     public int height;
     public boolean isAlive;
     public Rectangle rec;
-    public int HP = 50;
+    public double HP = 50;
     public int atk = 92;
     public int defense = 108;
     public int SpaAtk = 92;
@@ -28,9 +28,15 @@ public class Spiritomb {
         rec = new Rectangle(xpos, ypos, width, height);
 
 
+
     }
 
     public void move() {
+        if(HP>0){
+            isAlive = true;
+        } else {
+            isAlive=false;
+        }
         xpos = xpos + dx;
         ypos = ypos + dy;
         if (xpos <= 0) {

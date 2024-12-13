@@ -10,7 +10,7 @@ public class Lucario {
     public int height;
     public boolean isAlive;
     public Rectangle rec;
-    public int HP=70;
+    public double HP=70;
     public int atk= 110;
     public int defense=70;
     public int SpaAtk=115;
@@ -24,10 +24,19 @@ public class Lucario {
         dy = 4;
         width = Wwidth;
         height = wheight;
-        isAlive = true;
-        rec = new Rectangle(xpos, ypos, width, height);
+        isAlive=true;
+if( isAlive==true){
+    rec = new Rectangle(xpos, ypos, width, height);
+}
+
     }
     public void move() {
+        if(HP>0){
+            isAlive = true;
+        } else {
+            isAlive=false;
+
+        }
         xpos = xpos + dx;
         ypos = ypos + dy;
         if (xpos <= 0) {

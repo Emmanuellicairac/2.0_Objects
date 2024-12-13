@@ -11,12 +11,11 @@ public class Garchomp {
     public boolean isAlive;
     public Rectangle rec;
     public int HP=108;
-    public int atk= 138;
-    public int defense=95;
-    public int SpaAtk=80;
-    public int Spdef=85;
+    public int defense=95;;
     public int speed=102;
     public double DragonClaw;
+    public double StrongFlame;
+    public Fire myFilre;
 
 
 
@@ -27,20 +26,27 @@ public class Garchomp {
         dy = 0;
         width = Wwidth;
         height = wheight;
-        DragonClaw= (double) (atk + 50 % +80)/3;
-        if(HP>0){
-            isAlive = true;
-        } else {
-            isAlive=false;
-        }
+        DragonClaw=50;
+        StrongFlame=150;
+
 
 
         rec=new Rectangle(xpos,ypos,width,height);
+        myFilre= new Fire(xpos+120,ypos,50,50);
     }
         public void move() {
+            if(HP>0){
+                isAlive = true;
+            } else {
+                isAlive=false;
+            }
             xpos = xpos + dx;
             ypos = ypos + dy;
             rec = new Rectangle(xpos, ypos, width, height);
 
-    }
+
+                myFilre= new Fire(xpos+120,ypos,33,33);
+
+
+        }
 }
