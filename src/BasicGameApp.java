@@ -51,8 +51,8 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 
 	public Garchomp Cynthia;
-	public Spiritomb CynthiaSpiritomb;
-	public Lucario LucarioC;
+	public Spiritomb[] CynthiaSpiritomb;
+	public Lucario[] LucarioC;
 	public boolean isMove=true;
 	public boolean RightFacing=true;
 	public boolean drawFire=false;
@@ -90,8 +90,18 @@ public class BasicGameApp implements Runnable, KeyListener {
       //create (construct) the objects needed for the game and load up
 		GarchompPic =Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
 		Cynthia=new Garchomp(200,400,100,100);
-		LucarioC=new Lucario(500,200,200,200);
-		CynthiaSpiritomb=new Spiritomb(600,600,200,150);
+		LucarioC=new Lucario[5];
+		for(int x=0;x<LucarioC.length;x++){
+			LucarioC[x]=new Lucario(400+(x*100),450+(x*100),200,200);
+		}
+
+
+		CynthiaSpiritomb=new Spiritomb[5];
+		for(int x=0;x<CynthiaSpiritomb.length;x++){
+			CynthiaSpiritomb[x]=new Spiritomb(200+(x*100),300+(x*100),100,100);
+
+		}
+
 		SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb.png");
 			GarchompPicLeft=Toolkit.getDefaultToolkit().getImage("Garchomp(flip).png");
 			GarchompPic=Toolkit.getDefaultToolkit().getImage("Garchomp.png");
@@ -136,34 +146,42 @@ public class BasicGameApp implements Runnable, KeyListener {
 	{
       //calls the move( ) code in the objects
 		Cynthia.move();
-		CynthiaSpiritomb.move();
-		LucarioC.move();
+		for (int x=0;x<CynthiaSpiritomb.length;x++){
+			CynthiaSpiritomb[x].move();
+		}
+		for (int x=0;x<LucarioC.length;x++){
+			LucarioC[x].move();
+		}
+
 
 	}
 
 	public void collision() {
+		for(int x=0;x<CynthiaSpiritomb.length;x++){
+			if(LucarioC[x].rec.intersects(CynthiaSpiritomb[x].rec)){
+				LucarioC[x].dx= LucarioC[x].dx*-1;
+				LucarioC[x].dy= LucarioC[x].dy*-1;
 
-		if(LucarioC.rec.intersects(CynthiaSpiritomb.rec)){
+			}
+			if(CynthiaSpiritomb[x].rec.intersects((LucarioC[x].rec))){
+				CynthiaSpiritomb[x].dx= CynthiaSpiritomb[x].dx*-1;
+				CynthiaSpiritomb[x].dy=CynthiaSpiritomb[x].dy*-1;
 
-			LucarioC.dx= LucarioC.dx*-1;
-			LucarioC.dy= LucarioC.dy*-1;
+			}
+			if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb[x].rec)&& drawFire==true){
+				drawFire=false;
+				CynthiaSpiritomb[x].HP=CynthiaSpiritomb[x].HP-(Cynthia.StrongFlame-CynthiaSpiritomb[x].defense);
+				System.out.println("Spritomb #"+ x +"HP is "+CynthiaSpiritomb[x].HP);
+			}
+			if(Cynthia.myFilre.rec.intersects(LucarioC[x].rec)&& drawFire==true){
+				drawFire=false;
+				LucarioC[x].HP= LucarioC[x].HP+(Cynthia.DragonClaw-LucarioC[x].defense);
+				System.out.println("Lucario #"+ x +" HP is   "+LucarioC[x].HP);
+			}
+		}
 
-		}
-		if(CynthiaSpiritomb.rec.intersects((LucarioC.rec))){
-			CynthiaSpiritomb.dx= CynthiaSpiritomb.dx*-1;
-			CynthiaSpiritomb.dy=CynthiaSpiritomb.dy*-1;
 
-		}
-		if(Cynthia.myFilre.rec.intersects(LucarioC.rec)&& drawFire==true){
-			drawFire=false;
-			LucarioC.HP= LucarioC.HP+(Cynthia.DragonClaw-LucarioC.defense);
-			System.out.println("Lucario HP is   "+LucarioC.HP);
-		}
-		if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb.rec)&& drawFire==true){
-			drawFire=false;
-			CynthiaSpiritomb.HP=CynthiaSpiritomb.HP-(Cynthia.StrongFlame-CynthiaSpiritomb.defense);
-			System.out.println("Spritomb HP is   "+CynthiaSpiritomb.HP);
-		}
+
 
 
 
@@ -230,19 +248,26 @@ public class BasicGameApp implements Runnable, KeyListener {
 			g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
 
 		}
-		if (CynthiaSpiritomb.isAlive==true){
-			g.drawImage(SpirtombPic, CynthiaSpiritomb.xpos,CynthiaSpiritomb.ypos,CynthiaSpiritomb.width,CynthiaSpiritomb.height, null);
+		for(int x=0;x<CynthiaSpiritomb.length;x++){
+			if (CynthiaSpiritomb[x].isAlive==true){
+				g.drawImage(SpirtombPic, CynthiaSpiritomb[x].xpos,CynthiaSpiritomb[x].ypos,CynthiaSpiritomb[x].width,CynthiaSpiritomb[x].height, null);
 
-		} else {
+			} else {
+
+			}
+
+		}
+
+		for(int x=0;x<LucarioC.length;x++){
+			if (LucarioC[x].isAlive==true){
+				g.drawImage(LucarioPic,LucarioC[x].xpos, LucarioC[x].ypos,LucarioC[x].width, LucarioC[x].height, null);
+			} else {
+
+			}
 
 		}
 
 
-		if (LucarioC.isAlive==true){
-			g.drawImage(LucarioPic,LucarioC.xpos, LucarioC.ypos,LucarioC.width, LucarioC.height, null);
-		} else {
-
-		}
 
 		if(drawFire==true){
 			g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
