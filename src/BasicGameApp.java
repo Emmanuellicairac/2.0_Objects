@@ -15,11 +15,12 @@
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.tools.Tool;
 
 
 //*******************************************************************************
@@ -62,6 +63,20 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public Image LucarioPicLeft;
 	public Image FirePic;
 	public Image BackgroundPic;
+	public boolean gameHasbegun=false;
+	public Image startImage;
+	public Image levelScreenImage;
+	public boolean startScreen=false;
+	public boolean selectScreen;
+	public boolean level1=false;
+	public boolean level2=false;
+	public boolean level3=false;
+	public int lvlN;
+	public boolean allowCollision;
+	public boolean spiritombCreationtrue=false;
+
+
+
 
 
 
@@ -74,6 +89,8 @@ public class BasicGameApp implements Runnable, KeyListener {
 		BasicGameApp ex = new BasicGameApp();   //creates a new instance of the game
 		new Thread(ex).start(); //creates a threads & starts up the code in the run( ) method
 
+
+
 	}
 
 
@@ -82,25 +99,18 @@ public class BasicGameApp implements Runnable, KeyListener {
    // This section is the setup portion of the program
    // Initialize your variables and construct your program objects here.
 	public BasicGameApp() {
-
       
       setUpGraphics();
        
       //variable and objects
       //create (construct) the objects needed for the game and load up
+		startImage=Toolkit.getDefaultToolkit().getImage("Start.jpg");
+		levelScreenImage=Toolkit.getDefaultToolkit().getImage("Level Screen.jpg");
+
 		GarchompPic =Toolkit.getDefaultToolkit().getImage("Garchomp.jpeg");
 		Cynthia=new Garchomp(200,400,100,100);
-		LucarioC=new Lucario[5];
-		for(int x=0;x<LucarioC.length;x++){
-			LucarioC[x]=new Lucario(400+(x*100),450+(x*100),200,200);
-		}
 
 
-		CynthiaSpiritomb=new Spiritomb[5];
-		for(int x=0;x<CynthiaSpiritomb.length;x++){
-			CynthiaSpiritomb[x]=new Spiritomb(200+(x*100),300+(x*100),100,100);
-
-		}
 
 		SpirtombPic=Toolkit.getDefaultToolkit().getImage("Spiritomb.png");
 			GarchompPicLeft=Toolkit.getDefaultToolkit().getImage("Garchomp(flip).png");
@@ -118,6 +128,23 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 
 	}// BasicGameApp()
+	public void enemyCreation(){
+		CynthiaSpiritomb=new Spiritomb[lvlN];
+		System.out.println(lvlN);
+		LucarioC=new Lucario[lvlN];
+		for(int x=0;x<LucarioC.length;x++){
+			LucarioC[x]=new Lucario(400+(x*100),450+(x*100),200,200);
+			System.out.println("lucario being run");
+
+		}
+		for(int x=0;x<CynthiaSpiritomb.length;x++){
+			CynthiaSpiritomb[x]=new Spiritomb(200+(x*100),300+(x*100),100,100);
+			System.out.println("spiritomb length" + CynthiaSpiritomb.length);
+		}
+		spiritombCreationtrue=true;
+		allowCollision=true;
+
+	}
 
    
 //*******************************************************************************
@@ -129,14 +156,21 @@ public class BasicGameApp implements Runnable, KeyListener {
    // this is the code that plays the game after you set things up
 	public void run() {
 
-      //for the moment we will loop things forever.
+		//for the moment we will loop things forever.
 		while (true) {
-		collision();
-		if (isMove==true){
-			moveThings();  //move all the game objects
-		}
-         render();  // paint the graphics
-         pause(20); // sleep for 10 ms
+			render();  // paint the graphics
+
+			while (gameHasbegun==true && spiritombCreationtrue==true){
+
+				collision();
+
+				render();  // paint the graphics
+				if (isMove==true && spiritombCreationtrue==true){
+					moveThings();  //move all the game objects
+				}
+
+				pause(20); // sleep for 10 ms
+			}
 
 		}
 	}
@@ -157,27 +191,30 @@ public class BasicGameApp implements Runnable, KeyListener {
 	}
 
 	public void collision() {
-		for(int x=0;x<CynthiaSpiritomb.length;x++){
-			if(LucarioC[x].rec.intersects(CynthiaSpiritomb[x].rec)){
-				LucarioC[x].dx= LucarioC[x].dx*-1;
-				LucarioC[x].dy= LucarioC[x].dy*-1;
+		if(allowCollision==true){
+			for(int x=0;x<CynthiaSpiritomb.length;x++){
+				if(LucarioC[x].rec.intersects(CynthiaSpiritomb[x].rec)){
+					LucarioC[x].dx= LucarioC[x].dx*-1;
+					LucarioC[x].dy= LucarioC[x].dy*-1;
 
-			}
-			if(CynthiaSpiritomb[x].rec.intersects((LucarioC[x].rec))){
-				CynthiaSpiritomb[x].dx= CynthiaSpiritomb[x].dx*-1;
-				CynthiaSpiritomb[x].dy=CynthiaSpiritomb[x].dy*-1;
+				}
+				if(CynthiaSpiritomb[x].rec.intersects((LucarioC[x].rec))){
+					CynthiaSpiritomb[x].dx= CynthiaSpiritomb[x].dx*-1;
+					CynthiaSpiritomb[x].dy=CynthiaSpiritomb[x].dy*-1;
 
-			}
-			if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb[x].rec)&& drawFire==true){
-				drawFire=false;
-				CynthiaSpiritomb[x].HP=CynthiaSpiritomb[x].HP-(Cynthia.StrongFlame-CynthiaSpiritomb[x].defense);
-				System.out.println("Spritomb #"+ x +"HP is "+CynthiaSpiritomb[x].HP);
-			}
-			if(Cynthia.myFilre.rec.intersects(LucarioC[x].rec)&& drawFire==true){
-				drawFire=false;
-				LucarioC[x].HP= LucarioC[x].HP+(Cynthia.DragonClaw-LucarioC[x].defense);
-				System.out.println("Lucario #"+ x +" HP is   "+LucarioC[x].HP);
-			}
+				}
+				if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb[x].rec)&& drawFire==true){
+					drawFire=false;
+					CynthiaSpiritomb[x].HP=CynthiaSpiritomb[x].HP-(Cynthia.StrongFlame-CynthiaSpiritomb[x].defense);
+					System.out.println("Spritomb #"+ x +"HP is "+CynthiaSpiritomb[x].HP);
+				}
+				if(Cynthia.myFilre.rec.intersects(LucarioC[x].rec)&& drawFire==true){
+					drawFire=false;
+					LucarioC[x].HP= LucarioC[x].HP+(Cynthia.DragonClaw-LucarioC[x].defense);
+					System.out.println("Lucario #"+ x +" HP is   "+LucarioC[x].HP);
+				}
+		}
+
 		}
 
 
@@ -235,44 +272,64 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 	//paints things on the screen using bufferStrategy
 	private void render() {
+		System.out.println("Render is being run");
+
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		g.clearRect(0, 0, WIDTH, HEIGHT);
-		g.drawImage(BackgroundPic,0,0,WIDTH,HEIGHT,null);
+		if(gameHasbegun==false) {
+			g.drawImage(startImage, 0, 0, WIDTH, HEIGHT, null);
+		}
+		if (startScreen==true){
+			g.clearRect(0, 0, WIDTH, HEIGHT);
+			g.drawImage(levelScreenImage,0,0,WIDTH,HEIGHT,null);
+		}
+
+		if (gameHasbegun==true){
+			g.clearRect(0, 0, WIDTH, HEIGHT);
+			g.drawImage(BackgroundPic,0,0,WIDTH,HEIGHT,null);
+			System.out.println("background game run");
+
+		}
+		if(gameHasbegun==true && spiritombCreationtrue==true){
+			if (RightFacing==true){
+				g.drawImage(GarchompPicLeft, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+			}else {
+				g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+			}
+			for(int x=0;x<CynthiaSpiritomb.length;x++){
+				if (CynthiaSpiritomb[x].isAlive==true){
+					g.drawImage(SpirtombPic, CynthiaSpiritomb[x].xpos,CynthiaSpiritomb[x].ypos,CynthiaSpiritomb[x].width,CynthiaSpiritomb[x].height, null);
+
+				} else {
+
+				}
+
+			}
+
+			for(int x=0;x<LucarioC.length;x++){
+				if (LucarioC[x].isAlive==true){
+					g.drawImage(LucarioPic,LucarioC[x].xpos, LucarioC[x].ypos,LucarioC[x].width, LucarioC[x].height, null);
+				} else {
+
+				}
+
+			}
+
+			if(drawFire==true){
+				g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
+
+			}
+
+		}
+
+
 
 
       //draw the image of the astronaut
-		if (RightFacing==true){
-			g.drawImage(GarchompPicLeft, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
-
-		}else {
-			g.drawImage(GarchompPic, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
-
-		}
-		for(int x=0;x<CynthiaSpiritomb.length;x++){
-			if (CynthiaSpiritomb[x].isAlive==true){
-				g.drawImage(SpirtombPic, CynthiaSpiritomb[x].xpos,CynthiaSpiritomb[x].ypos,CynthiaSpiritomb[x].width,CynthiaSpiritomb[x].height, null);
-
-			} else {
-
-			}
-
-		}
-
-		for(int x=0;x<LucarioC.length;x++){
-			if (LucarioC[x].isAlive==true){
-				g.drawImage(LucarioPic,LucarioC[x].xpos, LucarioC[x].ypos,LucarioC[x].width, LucarioC[x].height, null);
-			} else {
-
-			}
-
-		}
 
 
-
-		if(drawFire==true){
-			g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
-
-		}
 
 
 		g.dispose();
@@ -280,10 +337,10 @@ public class BasicGameApp implements Runnable, KeyListener {
 		bufferStrategy.show();
 	}
 
+
+
 	@Override
 	public void keyTyped(KeyEvent e) {
-
-
 
 	}
 
@@ -327,7 +384,10 @@ public class BasicGameApp implements Runnable, KeyListener {
 			if (RightFacing==true){
 				drawFire=true;
 			}
-
+		}
+		if(key==32){
+			startScreen=true;
+			selectScreen=true;
 		}
 		if(key==87) {
 			Cynthia.dy = 0;
@@ -345,5 +405,28 @@ public class BasicGameApp implements Runnable, KeyListener {
 			Cynthia.dx=0;
 			RightFacing=true;
 		}
+		if(key==51 && gameHasbegun==false && selectScreen==true){
+			level3=true;
+			gameHasbegun=true;
+			lvlN=3;
+			System.out.println("Level 3 has begun");
+			enemyCreation();
+		}
+		if(key==49 && gameHasbegun==false && selectScreen==true) {
+			level1=true;
+			gameHasbegun=true;
+			lvlN=1;
+			System.out.println("Level 1 has begun");
+			enemyCreation();
+		}
+		if (key==50 && gameHasbegun==false && selectScreen==true){
+			level1=true;
+			gameHasbegun=true;
+			lvlN=2;
+			System.out.println("Level 2 has begun");
+			enemyCreation();
+		}
+
 	}
-}
+
+	}
