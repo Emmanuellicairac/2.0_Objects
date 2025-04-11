@@ -16,6 +16,7 @@ public class Lucario {
     public int SpaAtk=115;
     public int Spdef=70;
     public int speed=90;
+    public int deathTotal=0;
 
     public Lucario(int wxpos, int wypos, int Wwidth, int wheight){
         xpos = wxpos;
@@ -53,6 +54,9 @@ if( isAlive==true){
         if (ypos > 700) {
             dy = dy * -1;
         }
+
         rec = new Rectangle(xpos, ypos, width, height);
+
     }
+
 }

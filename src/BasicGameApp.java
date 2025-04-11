@@ -71,26 +71,18 @@ public class BasicGameApp implements Runnable, KeyListener {
 	public boolean level1=false;
 	public boolean level2=false;
 	public boolean level3=false;
-	public int lvlN;
 	public boolean allowCollision;
 	public boolean spiritombCreationtrue=false;
+	public int deathTotalLucario=0;
+	public int deathTotalSpiritomb=0;
+	public boolean runLevelCheck=false;
 
 
-
-
-
-
-
-
-
-   // Main method definition
+	// Main method definition
    // This is the code that runs first and automatically
 	public static void main(String[] args) {
 		BasicGameApp ex = new BasicGameApp();   //creates a new instance of the game
 		new Thread(ex).start(); //creates a threads & starts up the code in the run( ) method
-
-
-
 	}
 
 
@@ -99,9 +91,7 @@ public class BasicGameApp implements Runnable, KeyListener {
    // This section is the setup portion of the program
    // Initialize your variables and construct your program objects here.
 	public BasicGameApp() {
-      
       setUpGraphics();
-       
       //variable and objects
       //create (construct) the objects needed for the game and load up
 		startImage=Toolkit.getDefaultToolkit().getImage("Start.jpg");
@@ -127,22 +117,41 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 
 
-	}// BasicGameApp()
+	}
+	public void levelCheck(){
+
+		if(level1==true && runLevelCheck==true){
+			CynthiaSpiritomb=new Spiritomb[1];
+			LucarioC=new Lucario[1];
+			enemyCreation();
+		}
+		if(level2==true && runLevelCheck==true){
+			CynthiaSpiritomb=new Spiritomb[2];
+			LucarioC=new Lucario[2];
+			enemyCreation();
+		}
+		if(level3==true && runLevelCheck==true){
+			CynthiaSpiritomb=new Spiritomb[3];
+			LucarioC=new Lucario[3];
+			enemyCreation();
+		}
+		checkHealth();
+
+
+	}
+
 	public void enemyCreation(){
-		CynthiaSpiritomb=new Spiritomb[lvlN];
-		System.out.println(lvlN);
-		LucarioC=new Lucario[lvlN];
 		for(int x=0;x<LucarioC.length;x++){
-			LucarioC[x]=new Lucario(400+(x*100),450+(x*100),200,200);
-			System.out.println("lucario being run");
+			LucarioC[x]=new Lucario( (int)(Math.random()*1000), (int)(Math.random()*700),100,100);
+			System.out.println("Lucario xpos="+ LucarioC[x].xpos);
+			System.out.println("Lucario ypos="+ LucarioC[x].ypos);
 
 		}
 		for(int x=0;x<CynthiaSpiritomb.length;x++){
-			CynthiaSpiritomb[x]=new Spiritomb(200+(x*100),300+(x*100),100,100);
-			System.out.println("spiritomb length" + CynthiaSpiritomb.length);
+			CynthiaSpiritomb[x]=new Spiritomb( (int)(Math.random()*1000), (int)(Math.random()*700),100,100);
 		}
-		spiritombCreationtrue=true;
 		allowCollision=true;
+		runLevelCheck=false;
 
 	}
 
@@ -158,16 +167,25 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 		//for the moment we will loop things forever.
 		while (true) {
-			render();  // paint the graphics
+			render();
+			spiritombCreationtrue=true;
 
-			while (gameHasbegun==true && spiritombCreationtrue==true){
 
-				collision();
 
-				render();  // paint the graphics
-				if (isMove==true && spiritombCreationtrue==true){
-					moveThings();  //move all the game objects
+			while (gameHasbegun==true){
+				if( spiritombCreationtrue==true){
+					levelCheck();
+					collision();
+					moveThings();
 				}
+				render();
+
+
+
+				// paint the graphics
+
+
+
 
 				pause(20); // sleep for 10 ms
 			}
@@ -176,12 +194,12 @@ public class BasicGameApp implements Runnable, KeyListener {
 	}
 
 
-	public void moveThings()
-	{
+	public void moveThings() {
       //calls the move( ) code in the objects
 		Cynthia.move();
 		for (int x=0;x<CynthiaSpiritomb.length;x++){
 			CynthiaSpiritomb[x].move();
+
 		}
 		for (int x=0;x<LucarioC.length;x++){
 			LucarioC[x].move();
@@ -189,30 +207,60 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 
 	}
+	public void checkHealth(){
+		for (int x=0; x<LucarioC.length;x++){
+			if(LucarioC[x].HP<=0){
+				deathTotalLucario=deathTotalLucario+1;
+			}
+
+
+		}
+		for (int x=0; x<CynthiaSpiritomb.length;x++){
+			if(LucarioC[x].HP<=0){
+				deathTotalSpiritomb=deathTotalSpiritomb+1;
+			}
+
+		}
+		if (deathTotalLucario==1 && deathTotalSpiritomb==1 && level1==true){
+			level1=false;
+			level2=true;
+			runLevelCheck=true;
+		}
+		if (deathTotalLucario==3 && deathTotalSpiritomb==3 && level2==true){
+			level2=false;
+			level3=true;
+			runLevelCheck=true;
+		}
+		if (deathTotalLucario==6 && deathTotalSpiritomb==6 && level3==true){
+			level3=false;
+			runLevelCheck=false;
+			gameHasbegun=false;
+			startScreen=true;
+		}
+
+
+	}
 
 	public void collision() {
 		if(allowCollision==true){
-			for(int x=0;x<CynthiaSpiritomb.length;x++){
-				if(LucarioC[x].rec.intersects(CynthiaSpiritomb[x].rec)){
-					LucarioC[x].dx= LucarioC[x].dx*-1;
-					LucarioC[x].dy= LucarioC[x].dy*-1;
+			for(int x=0;x<LucarioC.length;x++){
 
-				}
-				if(CynthiaSpiritomb[x].rec.intersects((LucarioC[x].rec))){
-					CynthiaSpiritomb[x].dx= CynthiaSpiritomb[x].dx*-1;
-					CynthiaSpiritomb[x].dy=CynthiaSpiritomb[x].dy*-1;
-
-				}
 				if(Cynthia.myFilre.rec.intersects(CynthiaSpiritomb[x].rec)&& drawFire==true){
 					drawFire=false;
 					CynthiaSpiritomb[x].HP=CynthiaSpiritomb[x].HP-(Cynthia.StrongFlame-CynthiaSpiritomb[x].defense);
 					System.out.println("Spritomb #"+ x +"HP is "+CynthiaSpiritomb[x].HP);
+
+
 				}
 				if(Cynthia.myFilre.rec.intersects(LucarioC[x].rec)&& drawFire==true){
 					drawFire=false;
 					LucarioC[x].HP= LucarioC[x].HP+(Cynthia.DragonClaw-LucarioC[x].defense);
 					System.out.println("Lucario #"+ x +" HP is   "+LucarioC[x].HP);
 				}
+
+
+
+
 		}
 
 		}
@@ -272,13 +320,13 @@ public class BasicGameApp implements Runnable, KeyListener {
 
 	//paints things on the screen using bufferStrategy
 	private void render() {
-		System.out.println("Render is being run");
 
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		g.clearRect(0, 0, WIDTH, HEIGHT);
 		if(gameHasbegun==false) {
 			g.drawImage(startImage, 0, 0, WIDTH, HEIGHT, null);
 		}
+
 		if (startScreen==true){
 			g.clearRect(0, 0, WIDTH, HEIGHT);
 			g.drawImage(levelScreenImage,0,0,WIDTH,HEIGHT,null);
@@ -287,10 +335,8 @@ public class BasicGameApp implements Runnable, KeyListener {
 		if (gameHasbegun==true){
 			g.clearRect(0, 0, WIDTH, HEIGHT);
 			g.drawImage(BackgroundPic,0,0,WIDTH,HEIGHT,null);
-			System.out.println("background game run");
-
 		}
-		if(gameHasbegun==true && spiritombCreationtrue==true){
+		if(gameHasbegun==true ){
 			if (RightFacing==true){
 				g.drawImage(GarchompPicLeft, Cynthia.xpos, Cynthia.ypos,Cynthia.width, Cynthia.height, null);
 
@@ -321,6 +367,17 @@ public class BasicGameApp implements Runnable, KeyListener {
 				g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
 
 			}
+			for(int x=0;x<LucarioC.length;x++){
+				g.drawRect(LucarioC[x].rec.x, LucarioC[x].rec.y, LucarioC[x].rec.width,LucarioC[x].rec.height);
+
+
+			}
+			for(int x=0;x<CynthiaSpiritomb.length;x++){
+				g.drawRect(CynthiaSpiritomb[x].rec.x, CynthiaSpiritomb[x].rec.y, CynthiaSpiritomb[x].rec.width,CynthiaSpiritomb[x].rec.height);
+
+
+			}
+
 
 		}
 
@@ -387,7 +444,9 @@ public class BasicGameApp implements Runnable, KeyListener {
 		}
 		if(key==32){
 			startScreen=true;
-			selectScreen=true;
+
+
+
 		}
 		if(key==87) {
 			Cynthia.dy = 0;
@@ -405,26 +464,32 @@ public class BasicGameApp implements Runnable, KeyListener {
 			Cynthia.dx=0;
 			RightFacing=true;
 		}
-		if(key==51 && gameHasbegun==false && selectScreen==true){
+		if(key==51 && gameHasbegun==false && startScreen==true){
 			level3=true;
-			gameHasbegun=true;
-			lvlN=3;
+
 			System.out.println("Level 3 has begun");
-			enemyCreation();
+
 		}
-		if(key==49 && gameHasbegun==false && selectScreen==true) {
+		if(key==49 && gameHasbegun==false && startScreen==true) {
 			level1=true;
+			runLevelCheck=true;
+
+
 			gameHasbegun=true;
-			lvlN=1;
-			System.out.println("Level 1 has begun");
-			enemyCreation();
+			System.out.println("game has begun =" +gameHasbegun);
+
+
 		}
-		if (key==50 && gameHasbegun==false && selectScreen==true){
-			level1=true;
+		if (key==50 && gameHasbegun==false && startScreen==true){
+			level2=true;
+
 			gameHasbegun=true;
-			lvlN=2;
 			System.out.println("Level 2 has begun");
-			enemyCreation();
+
+		}
+		if (key==8){
+			gameHasbegun=false;
+			selectScreen=true;
 		}
 
 	}
