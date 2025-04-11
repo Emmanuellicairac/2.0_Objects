@@ -367,16 +367,8 @@ public class BasicGameApp implements Runnable, KeyListener {
 				g.drawImage(FirePic,Cynthia.myFilre.xpos,Cynthia.ypos,Cynthia.width, Cynthia.height, null);
 
 			}
-			for(int x=0;x<LucarioC.length;x++){
-				g.drawRect(LucarioC[x].rec.x, LucarioC[x].rec.y, LucarioC[x].rec.width,LucarioC[x].rec.height);
 
 
-			}
-			for(int x=0;x<CynthiaSpiritomb.length;x++){
-				g.drawRect(CynthiaSpiritomb[x].rec.x, CynthiaSpiritomb[x].rec.y, CynthiaSpiritomb[x].rec.width,CynthiaSpiritomb[x].rec.height);
-
-
-			}
 
 
 		}
